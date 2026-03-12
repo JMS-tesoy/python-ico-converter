@@ -22,19 +22,20 @@ class App(ctk.CTk):
         # Initialize temporary storage
         self.temp_dir = tempfile.mkdtemp()
         self.generated_ico_path = None
+        self.selected_file_path = None
 
         # --- Widgets ---
         self.source_label = ctk.CTkLabel(self, text="Upload Image:")
         self.source_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
-        self.source_path = ctk.CTkEntry(self, placeholder_text="Select the image file to convert...")
-        self.source_path.grid(row=0, column=1, padx=20, pady=(20, 10), sticky="ew")
+        self.file_label = ctk.CTkLabel(self, text="No file selected", text_color="gray")
+        self.file_label.grid(row=0, column=1, padx=20, pady=(20, 10), sticky="ew")
         self.source_button = ctk.CTkButton(self, text="Browse", command=self.select_file)
         self.source_button.grid(row=0, column=2, padx=20, pady=(20, 10))
 
         self.convert_button = ctk.CTkButton(self, text="Convert to ICO", command=self.start_conversion_thread)
         self.convert_button.grid(row=1, column=1, padx=20, pady=20)
 
-        self.download_button = ctk.CTkButton(self, text="Download ICO", state="disabled", command=self.save_file, fg_color="green", hover_color="darkgreen")
+        self.download_button = ctk.CTkButton(self, text="Save to...", state="disabled", command=self.save_file, fg_color="green", hover_color="darkgreen")
         self.download_button.grid(row=2, column=1, padx=20, pady=(0, 20))
 
         self.log_textbox = ctk.CTkTextbox(self, state="disabled", height=200)
@@ -59,8 +60,8 @@ class App(ctk.CTk):
             ]
         )
         if file_path:
-            self.source_path.delete(0, "end")
-            self.source_path.insert(0, file_path)
+            self.selected_file_path = file_path
+            self.file_label.configure(text=Path(file_path).name, text_color=("black", "white"))
             # Reset download state when a new file is selected
             self.download_button.configure(state="disabled")
             self.generated_ico_path = None
@@ -72,7 +73,7 @@ class App(ctk.CTk):
         self.log_textbox.see("end")
 
     def start_conversion_thread(self):
-        source = self.source_path.get()
+        source = self.selected_file_path
         if not source:
             self.log_message("Please upload a source file first.")
             return
