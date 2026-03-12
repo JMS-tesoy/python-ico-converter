@@ -20,7 +20,7 @@ if exist "IconConverter.spec" (
 
 echo.
 echo Starting the PyInstaller build process...
-pyinstaller --noconfirm --clean --onefile --windowed --name IconConverter app_ui.py
+pyinstaller --noconfirm --clean --onefile --windowed --name IconConverter --collect-all tkinterdnd2 app_ui.py
 
 echo.
 echo Build process finished. The executable is in the 'dist' folder.

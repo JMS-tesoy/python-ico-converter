@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 import threading
+from tkinterdnd2 import TkinterDnD, DND_FILES
 from converter import convert_single_file
 import tempfile
 import shutil
@@ -8,9 +9,10 @@ import os
 from pathlib import Path
 
 # --- Main Application Class ---
-class App(ctk.CTk):
+class App(ctk.CTk, TkinterDnD.DnDWrapper):
     def __init__(self):
         super().__init__()
+        self.TkdndVersion = TkinterDnD._require(self)
 
         self.title("Icon Converter")
         self.geometry("700x500")
@@ -45,6 +47,10 @@ class App(ctk.CTk):
         # Add cleanup for temporary directory on exit
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        # Enable drag and drop
+        self.drop_target_register(DND_FILES)
+        self.dnd_bind('<<Drop>>', self.drop_event)
+
     def select_folder(self, entry_widget):
         folder_path = filedialog.askdirectory()
         if folder_path:
@@ -60,11 +66,14 @@ class App(ctk.CTk):
             ]
         )
         if file_path:
-            self.selected_file_path = file_path
-            self.file_label.configure(text=Path(file_path).name, text_color=("black", "white"))
-            # Reset download state when a new file is selected
-            self.download_button.configure(state="disabled")
-            self.generated_ico_path = None
+            self.load_file(file_path)
+
+    def load_file(self, file_path):
+        self.selected_file_path = file_path
+        self.file_label.configure(text=Path(file_path).name, text_color=("black", "white"))
+        # Reset download state when a new file is selected
+        self.download_button.configure(state="disabled")
+        self.generated_ico_path = None
 
     def log_message(self, message):
         self.log_textbox.configure(state="normal")
@@ -125,6 +134,14 @@ class App(ctk.CTk):
             # Log error if cleanup fails, but don't prevent exit
             print(f"Error cleaning up temp directory: {e}")
         self.destroy()
+
+    def drop_event(self, event):
+        file_path = event.data
+        # Handle path formatting (remove curly braces added by Windows for paths with spaces)
+        if file_path.startswith('{') and file_path.endswith('}'):
+            file_path = file_path[1:-1]
+        
+        self.load_file(file_path)
 
 if __name__ == "__main__":
     App().mainloop()
