@@ -1,25 +1,26 @@
-# Repository Guidelines
+# Repository Guidelines for AI Agents & Developers
 
 ## Project Structure & Module Organization
-This is a command-line utility for batch converting image files to the `.ico` format.
-- `convert_all_png_to_ico.py`: The main script that handles argument parsing and image conversion.
-- `Raw File/`: The default source directory for input images.
-- `Icon File/`: The default destination directory for generated `.ico` files.
+This project provides a GUI application and a legacy command-line script for batch converting images to the `.ico` format.
+
+- **`app_ui.py`**: The main graphical user interface application (recommended for users).
+- **`image_converter.py`**: The legacy command-line script.
+- **`requirements.txt`**: Lists Python dependencies for the project.
 
 ## Build, Test, and Development Commands
-The script depends on the **Pillow** (`PIL`) library. Ensure it is installed:
+Dependencies are listed in `requirements.txt`. Install them with:
 ```sh
-pip install Pillow
+pip install -r requirements.txt
 ```
 
 To run the script with default folders (`Raw File/` and `Icon File/`):
 ```sh
-python convert_all_png_to_ico.py
+python image_converter.py
 ```
 
 To specify custom source and destination folders:
 ```sh
-python convert_all_png_to_ico.py --source "path/to/your/images" --dest "path/for/your/icons"
+python image_converter.py --source "path/to/your/images" --dest "path/for/your/icons"
 ```
 
 ## Testing Guidelines

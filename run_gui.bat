@@ -1,0 +1,3 @@
+@echo off
+echo Starting the Icon Converter GUI...
+python app_ui.py
