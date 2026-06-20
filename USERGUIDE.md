@@ -72,6 +72,12 @@ Or run:
 
 You can also drag an image file directly into the app window. After dropping the file, choose your icon sizes and convert it normally.
 
+### Built-In User Manual
+
+The app includes a **User Manual** button. Click it to open beginner-friendly instructions inside the app window.
+
+This is useful when the app is shared as `IconConverter.exe` because the user does not need to open any separate documentation file.
+
 ## Icon Size Selection
 
 The GUI supports these icon sizes:
@@ -83,7 +89,7 @@ The GUI supports these icon sizes:
 - `128x128`
 - `256x256`
 
-All sizes are selected by default. Uncheck any sizes you do not need.
+No icon sizes are selected by default. Select only the sizes you want to include.
 
 At least one icon size must be selected before converting.
 
@@ -274,6 +280,23 @@ Then run:
 ```powershell
 .\build.bat
 ```
+
+### Build Says `Access Is Denied`
+
+This usually means the old executable is still being used by Windows.
+
+Try these steps:
+
+1. Close `IconConverter.exe` if it is open.
+2. Close File Explorer windows that are showing the `dist` folder.
+3. Wait a few seconds in case antivirus is scanning the file.
+4. Run the build again:
+
+```powershell
+.\build.bat
+```
+
+The build script now tries to close a running `IconConverter.exe` automatically, but Windows can still block the file if another program is using it.
 
 ### Drag and Drop Does Not Work in the Built App
 

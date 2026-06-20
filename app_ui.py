@@ -8,6 +8,55 @@ import shutil
 import os
 from pathlib import Path
 
+USER_MANUAL_TEXT = """Icon Converter Beginner Manual
+
+What this app does
+This app turns an image file into a Windows icon file.
+The new file will end with .ico.
+
+Supported image files
+- PNG files
+- JPG files
+- JPEG files
+
+How to convert an image
+1. Click the Browse button.
+2. Choose the image you want to convert.
+3. Select at least one icon size.
+4. Click Convert to ICO.
+5. Wait until the log says the icon is ready.
+6. Click Save to...
+7. Choose where you want to save the new .ico file.
+
+About icon sizes
+The boxes under Icon Sizes control which pixel sizes are placed inside the icon file.
+
+Common choices:
+- 16x16: Very small icon size.
+- 32x32: Common desktop and app icon size.
+- 48x48: Larger Windows icon size.
+- 64x64: Useful for larger displays.
+- 128x128: High-quality large icon size.
+- 256x256: Best quality Windows icon size.
+
+If you are not sure what to choose, select 32x32, 48x48, and 256x256.
+
+Important notes
+- At least one icon size must be selected.
+- The app will not stretch wide or tall images.
+- Non-square images are centered inside a transparent square icon.
+- After choosing a new image, convert it again before saving.
+
+Drag and drop
+You can drag a PNG, JPG, or JPEG file into the app window instead of using Browse.
+
+If something does not work
+- Make sure the file is a PNG, JPG, or JPEG.
+- Make sure at least one icon size is selected.
+- Try saving to a normal folder like Desktop or Documents.
+- If Windows shows a security warning, choose More info, then Run anyway only if you trust this app.
+"""
+
 # --- Main Application Class ---
 class App(ctk.CTk, TkinterDnD.DnDWrapper):
     def __init__(self):
@@ -42,7 +91,7 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.size_frame.grid(row=1, column=1, columnspan=2, padx=20, pady=(10, 10), sticky="w")
 
         for index, size in enumerate(self.size_options):
-            var = BooleanVar(value=True)
+            var = BooleanVar(value=False)
             self.size_vars[size] = var
             checkbox = ctk.CTkCheckBox(
                 self.size_frame,
@@ -53,6 +102,9 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
 
         self.convert_button = ctk.CTkButton(self, text="Convert to ICO", command=self.start_conversion_thread)
         self.convert_button.grid(row=2, column=1, padx=20, pady=20)
+
+        self.manual_button = ctk.CTkButton(self, text="User Manual", command=self.show_user_manual)
+        self.manual_button.grid(row=2, column=2, padx=20, pady=20)
 
         self.download_button = ctk.CTkButton(self, text="Save to...", state="disabled", command=self.save_file, fg_color="green", hover_color="darkgreen")
         self.download_button.grid(row=3, column=1, padx=20, pady=(0, 20))
@@ -97,6 +149,27 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.log_textbox.insert("end", message + "\n")
         self.log_textbox.configure(state="disabled")
         self.log_textbox.see("end")
+
+    def show_user_manual(self):
+        manual_window = ctk.CTkToplevel(self)
+        manual_window.title("Icon Converter User Manual")
+        manual_window.geometry("640x560")
+        manual_window.transient(self)
+
+        manual_window.grid_columnconfigure(0, weight=1)
+        manual_window.grid_rowconfigure(1, weight=1)
+
+        title_label = ctk.CTkLabel(
+            manual_window,
+            text="Icon Converter User Manual",
+            font=ctk.CTkFont(size=20, weight="bold"),
+        )
+        title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
+
+        manual_textbox = ctk.CTkTextbox(manual_window, wrap="word")
+        manual_textbox.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
+        manual_textbox.insert("1.0", USER_MANUAL_TEXT)
+        manual_textbox.configure(state="disabled")
 
     def start_conversion_thread(self):
         source = self.selected_file_path
