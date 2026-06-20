@@ -1,52 +1,112 @@
 # Python ICO Converter
 
-A simple and efficient utility to batch convert image files (`.png`, `.jpg`, `.jpeg`) into multi-resolution `.ico` files.
-
-This script is perfect for developers and designers who need to quickly generate high-quality icons for applications, websites, or favicons from standard image sources.
+A small Windows-friendly Python utility for converting `.png`, `.jpg`, and `.jpeg` images into `.ico` files. The project includes a graphical desktop app for normal use and a legacy command-line script for batch conversion.
 
 ## Features
 
-- **Graphical User Interface**: Easy-to-use interface for selecting folders and viewing progress.
-- **Portable Application**: Can be bundled into a single `.exe` file that runs anywhere on Windows without installation.
-- **Batch Conversion**: Convert all supported images in a directory at once.
-- **Multi-Resolution Icons**: Creates `.ico` files with standard sizes (16x16, 32x32, 48x48, 64x64, 128x128, 256x256) for high-quality display across all platforms.
-- **Flexible Paths**: Specify custom source and destination folders via command-line arguments.
-- **Robust Error Handling**: Skips corrupted or unsupported files and provides a final summary of successful and failed conversions.
+- GUI image upload with Browse and drag-and-drop support.
+- Selectable icon pixel sizes: `16x16`, `32x32`, `48x48`, `64x64`, `128x128`, and `256x256`.
+- Transparent square padding for non-square source images, so selected icon sizes are generated as true square frames.
+- Batch conversion through the command line.
+- Custom source and destination folders for CLI usage.
+- Portable `.exe` build process through PyInstaller.
 
-## Prerequisites
+## Project Structure
 
-- Python 3.6+
-- Pillow (the Python Imaging Library fork)
+- `app_ui.py`: Main graphical application.
+- `converter.py`: Shared conversion logic used by both GUI and CLI.
+- `image_converter.py`: Command-line batch converter.
+- `requirements.txt`: Python package dependencies.
+- `install.bat`: Installs dependencies from `requirements.txt`.
+- `run_gui.bat`: Starts the GUI app.
+- `run_cli.bat`: Runs the CLI converter with default folders.
+- `build.bat`: Builds a standalone Windows executable.
+- `Raw File/`: Default source folder for CLI conversion.
+- `Icon File/`: Default output folder for CLI conversion.
+- `USERGUIDE.md`: End-user guide, including usage and build instructions.
 
-## Installation
+## Requirements
 
-1.  **Clone the repository (or download the script):**
-    ```sh
-    git clone https://github.com/JMS-tesoy/python-ico-converter.git
-    cd python-ico-converter 
-    ```
+- Python 3.10+ recommended
+- pip
+- Windows PowerShell or Command Prompt
 
-2.  **Install the required library:**
-    ```sh
-    pip install -r requirements.txt
-    ```
+Install dependencies:
 
-## Usage
+```powershell
+pip install -r requirements.txt
+```
 
-### GUI Application (Recommended)
+Or run:
 
-Run the `app_ui.py` script. Use "Browse" to upload your source image file, click "Convert to ICO", and then click "Download ICO" to save the result.
+```powershell
+.\install.bat
+```
 
-```sh
+## Run the GUI
+
+```powershell
 python app_ui.py
 ```
 
-### Command-Line (Legacy)
+Or run:
 
-```sh
-# Use default folders ('Raw File/' and 'Icon File/')
-python image_converter.py
-
-# Specify custom source and destination folders
-python image_converter.py --source "path/to/your/images" --dest "path/for/your/icons"
+```powershell
+.\run_gui.bat
 ```
+
+In the GUI, choose an image, select the icon sizes you want, click **Convert to ICO**, then click **Save to...**.
+
+## Run the CLI
+
+Use the default folders:
+
+```powershell
+python image_converter.py
+```
+
+Use custom folders:
+
+```powershell
+python image_converter.py --source "path\to\images" --dest "path\to\icons"
+```
+
+Choose specific icon sizes:
+
+```powershell
+python image_converter.py --source "Raw File" --dest "Icon File" --sizes 16,32,256
+```
+
+## Build the Windows Executable
+
+Install PyInstaller if needed:
+
+```powershell
+pip install pyinstaller
+```
+
+Then run:
+
+```powershell
+.\build.bat
+```
+
+The build script creates a standalone executable at:
+
+```text
+dist\IconConverter.exe
+```
+
+## Testing
+
+There is no automated test suite yet. Manual verification is recommended:
+
+- Start the GUI with `python app_ui.py`.
+- Convert a PNG or JPG with only one or two sizes selected.
+- Save the `.ico` file.
+- Confirm the output file opens correctly in Windows or an icon viewer.
+- Run the CLI with `--sizes 16,32` and confirm the output appears in the destination folder.
+
+## More Help
+
+See `USERGUIDE.md` for a fuller step-by-step guide for installation, usage, building, and troubleshooting.

@@ -1,4 +1,5 @@
-('D:\\Pictures\\ico converter\\build\\IconConverter\\PYZ-00.pyz',
+('D:\\Documents\\Website Project\\ico '
+ 'converter\\build\\IconConverter\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\PIL\\__init__.py',
    'PYMODULE'),
@@ -422,7 +423,9 @@
   ('contextvars',
    'C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python310\\lib\\contextvars.py',
    'PYMODULE'),
-  ('converter', 'D:\\Pictures\\ico converter\\converter.py', 'PYMODULE'),
+  ('converter',
+   'D:\\Documents\\Website Project\\ico converter\\converter.py',
+   'PYMODULE'),
   ('copy',
    'C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python310\\lib\\copy.py',
    'PYMODULE'),
