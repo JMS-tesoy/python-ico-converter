@@ -1,8 +1,8 @@
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import BooleanVar, filedialog
 import threading
 from tkinterdnd2 import TkinterDnD, DND_FILES
-from converter import convert_single_file
+from converter import DEFAULT_ICO_SIZES, convert_single_file
 import tempfile
 import shutil
 import os
@@ -25,6 +25,8 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.temp_dir = tempfile.mkdtemp()
         self.generated_ico_path = None
         self.selected_file_path = None
+        self.size_options = list(DEFAULT_ICO_SIZES)
+        self.size_vars = {}
 
         # --- Widgets ---
         self.source_label = ctk.CTkLabel(self, text="Upload Image:")
@@ -34,15 +36,30 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.source_button = ctk.CTkButton(self, text="Browse", command=self.select_file)
         self.source_button.grid(row=0, column=2, padx=20, pady=(20, 10))
 
+        self.size_label = ctk.CTkLabel(self, text="Icon Sizes:")
+        self.size_label.grid(row=1, column=0, padx=20, pady=(10, 10), sticky="nw")
+        self.size_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.size_frame.grid(row=1, column=1, columnspan=2, padx=20, pady=(10, 10), sticky="w")
+
+        for index, size in enumerate(self.size_options):
+            var = BooleanVar(value=True)
+            self.size_vars[size] = var
+            checkbox = ctk.CTkCheckBox(
+                self.size_frame,
+                text=f"{size}x{size}",
+                variable=var,
+            )
+            checkbox.grid(row=index // 3, column=index % 3, padx=(0, 18), pady=4, sticky="w")
+
         self.convert_button = ctk.CTkButton(self, text="Convert to ICO", command=self.start_conversion_thread)
-        self.convert_button.grid(row=1, column=1, padx=20, pady=20)
+        self.convert_button.grid(row=2, column=1, padx=20, pady=20)
 
         self.download_button = ctk.CTkButton(self, text="Save to...", state="disabled", command=self.save_file, fg_color="green", hover_color="darkgreen")
-        self.download_button.grid(row=2, column=1, padx=20, pady=(0, 20))
+        self.download_button.grid(row=3, column=1, padx=20, pady=(0, 20))
 
         self.log_textbox = ctk.CTkTextbox(self, state="disabled", height=200)
-        self.log_textbox.grid(row=3, column=0, columnspan=3, padx=20, pady=10, sticky="nsew")
-        self.grid_rowconfigure(3, weight=1)
+        self.log_textbox.grid(row=4, column=0, columnspan=3, padx=20, pady=10, sticky="nsew")
+        self.grid_rowconfigure(4, weight=1)
 
         # Add cleanup for temporary directory on exit
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -86,6 +103,11 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         if not source:
             self.log_message("Please upload a source file first.")
             return
+        
+        selected_sizes = self.get_selected_sizes()
+        if not selected_sizes:
+            self.log_message("Please select at least one icon size.")
+            return
 
         # Clear the log box for a new conversion run
         self.log_textbox.configure(state="normal")
@@ -94,9 +116,15 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         self.convert_button.configure(state="disabled", text="Converting...")
         self.download_button.configure(state="disabled")
         
-        threading.Thread(target=self.run_conversion, args=(source,)).start()
+        threading.Thread(target=self.run_conversion, args=(source, selected_sizes)).start()
 
-    def run_conversion(self, source):
+    def get_selected_sizes(self):
+        return [
+            size for size, var in self.size_vars.items()
+            if var.get()
+        ]
+
+    def run_conversion(self, source, selected_sizes):
         log_callback = lambda msg: self.after(0, self.log_message, msg)
         
         # Prepare temp file path logic
@@ -108,7 +136,7 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         if temp_ico_path.exists():
             os.remove(temp_ico_path)
 
-        convert_single_file(source, self.temp_dir, log_callback)
+        convert_single_file(source, self.temp_dir, log_callback, selected_sizes)
         
         self.convert_button.configure(state="normal", text="Convert to ICO")
 
